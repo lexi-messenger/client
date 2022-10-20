@@ -89,6 +89,7 @@ export default function App() {
             <View>
                 <Text>Messages</Text>
                 <FlatList
+                    style={styles.messages}
                     data={[...messages].reverse()}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id}
@@ -135,4 +136,7 @@ const styles = StyleSheet.create({
     title1: {
         fontSize: 16,
     },
+    messages: {
+        margin: 30
+    }
 });
