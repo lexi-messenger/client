@@ -68,11 +68,11 @@ export default function App() {
                 <Button
                     title="send"
                     onPress={() => {
-                        messages.push({
+                        setMessages([...messages, {
                             id: Math.random().toString(12).substring(2),
                             message: text,
                             prefix: "sent: "
-                        });
+                        }]);
                         ws.send(text);
                         text = "";
                         inputRef.current.setNativeProps({ text: "" });
