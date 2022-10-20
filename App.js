@@ -91,7 +91,9 @@ export default function App() {
                 <FlatList
                     data={messages}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.message}
+                    keyExtractor={(item) => item.id}
+                    inverted
+                    contentContainerStyle={{ flexDirection: 'column-reverse' }}
                 ></FlatList>
             </View>
 
