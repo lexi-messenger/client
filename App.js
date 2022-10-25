@@ -5,9 +5,10 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Chat from "./elements/Chat";
 
+let ws = new WebSocket("ws://192.168.29.91:8080");
+let interval;
+
 function ChatScreen({ navigation }) {
-    let ws = new WebSocket("ws://192.168.29.91:8080");
-    let interval;
     let [text, setText] = useState("");
     let [messages, setMessages] = useState([]);
     const inputRef = useRef();
