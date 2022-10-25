@@ -1,12 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import React, { useState, useRef } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Chat from "./elements/Chat";
 
-let ws = new WebSocket("ws://192.168.29.91:8080");
-let interval;
-
-export default function App() {
+function ChatScreen({ navigation }) {
+    let ws = new WebSocket("ws://192.168.29.91:8080");
+    let interval;
     let [text, setText] = useState("");
     let [messages, setMessages] = useState([]);
     const inputRef = useRef();
@@ -80,11 +81,46 @@ export default function App() {
             </View>
             <View>
                 <Text>Messages</Text>
+                <Button
+                    title="profile"
+                    onPress={() => navigation.navigate("Profile")}
+                />
                 <Chat messages={messages}></Chat>
             </View>
 
             <StatusBar style="auto" />
         </View>
+    );
+}
+
+function ProfileScreen({ navigation }) {
+    return (
+        <View
+            style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
+            <Text>Profile Screen</Text>
+            <Button
+                title="go to chat"
+                onPress={() => navigation.navigate("Chat")}
+            />
+        </View>
+    );
+}
+
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+    return (
+        <NavigationContainer>
+            <Stack.Navigator initialRouteName="Profile">
+                <Stack.Screen name="Chat" component={ChatScreen} />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
+            </Stack.Navigator>
+        </NavigationContainer>
     );
 }
 
