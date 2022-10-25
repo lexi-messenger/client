@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import Item from "./Item";
 
 const renderItem = ({ item }) => <Item title={item.prefix + item.message} />;
