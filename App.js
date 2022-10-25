@@ -8,6 +8,7 @@ import {
     FlatList,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
+import Chat from "./elements/Chat";
 
 let ws = new WebSocket("ws://192.168.29.91:8080");
 let interval;
@@ -88,14 +89,7 @@ export default function App() {
             </View>
             <View>
                 <Text>Messages</Text>
-                <FlatList
-                    style={styles.messages}
-                    data={[...messages].reverse()}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    inverted
-                    //contentContainerStyle={{ flexDirection: 'column-reverse' }}
-                ></FlatList>
+                <Chat messages={messages}></Chat>
             </View>
 
             <StatusBar style="auto" />
