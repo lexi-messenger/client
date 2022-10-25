@@ -1,22 +1,10 @@
 import { StatusBar } from "expo-status-bar";
-import {
-    StyleSheet,
-    Text,
-    View,
-    TextInput,
-    Button,
-    FlatList,
-} from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import React, { useState, useRef } from "react";
+import Chat from "./elements/Chat";
 
 let ws = new WebSocket("ws://192.168.29.91:8080");
 let interval;
-
-const Item = ({ title }) => (
-    <View style={styles.item}>
-        <Text style={styles.title1}>{title}</Text>
-    </View>
-);
 
 export default function App() {
     let [text, setText] = useState("");
@@ -45,16 +33,17 @@ export default function App() {
         ws.onmessage = (e) => {
             // a message was received
             console.log(`received: ${e.data}`);
-            setMessages([...messages, {
-                id: Math.random().toString(12).substring(0),
-                message: e.data,
-                prefix: "recieved: "
-            }]);
+            setMessages([
+                ...messages,
+                {
+                    id: Math.random().toString(12).substring(0),
+                    message: e.data,
+                    prefix: "recieved: ",
+                },
+            ]);
         };
     }
     connect(ws);
-
-    const renderItem = ({ item }) => <Item title={item.prefix + item.message} />;
 
     return (
         <View style={styles.container}>
@@ -68,11 +57,14 @@ export default function App() {
                 <Button
                     title="send"
                     onPress={() => {
-                        setMessages([...messages, {
-                            id: Math.random().toString(12).substring(2),
-                            message: text,
-                            prefix: "sent: "
-                        }]);
+                        setMessages([
+                            ...messages,
+                            {
+                                id: Math.random().toString(12).substring(2),
+                                message: text,
+                                prefix: "sent: ",
+                            },
+                        ]);
                         ws.send(text);
                         text = "";
                         inputRef.current.setNativeProps({ text: "" });
@@ -88,14 +80,7 @@ export default function App() {
             </View>
             <View>
                 <Text>Messages</Text>
-                <FlatList
-                    style={styles.messages}
-                    data={[...messages].reverse()}
-                    renderItem={renderItem}
-                    keyExtractor={(item) => item.id}
-                    inverted
-                    //contentContainerStyle={{ flexDirection: 'column-reverse' }}
-                ></FlatList>
+                <Chat messages={messages}></Chat>
             </View>
 
             <StatusBar style="auto" />
@@ -126,17 +111,10 @@ const styles = StyleSheet.create({
     child: {
         width: 40,
     },
-
     item: {
         backgroundColor: "#f9c2ff",
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
     },
-    title1: {
-        fontSize: 16,
-    },
-    messages: {
-        margin: 30
-    }
 });
