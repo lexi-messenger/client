@@ -3,6 +3,8 @@ import { StyleSheet, Text, View, TextInput, Button } from "react-native";
 import React, { useState, useRef } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import Chat from "./elements/Chat";
 
 let ws = new WebSocket("ws://192.168.29.91:8080");
@@ -112,15 +114,15 @@ function ProfileScreen({ navigation }) {
     );
 }
 
-const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Profile">
-                <Stack.Screen name="Chat" component={ChatScreen} />
-                <Stack.Screen name="Profile" component={ProfileScreen} />
-            </Stack.Navigator>
+            <Tab.Navigator initialRouteName="Profile">
+                <Tab.Screen name="Chat" component={ChatScreen} />
+                <Tab.Screen name="Profile" component={ProfileScreen} />
+            </Tab.Navigator>
         </NavigationContainer>
     );
 }
