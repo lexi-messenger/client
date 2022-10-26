@@ -10,6 +10,23 @@ import Chat from "./elements/Chat";
 let ws = new WebSocket("ws://192.168.29.91:8080");
 let interval;
 
+function LoginScreen({ navigation }) {
+    return (
+        <View
+            style={{
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
+            <Text>Login</Text>
+            <TextInput placeholder="Username" />
+            <TextInput placeholder="Password" />
+            <Button title="Login" />
+        </View>
+    );
+}
+
 function ChatScreen({ navigation }) {
     let [text, setText] = useState("");
     let [messages, setMessages] = useState([]);
@@ -119,7 +136,8 @@ const Tab = createBottomTabNavigator();
 export default function App() {
     return (
         <NavigationContainer>
-            <Tab.Navigator initialRouteName="Profile">
+            <Tab.Navigator initialRouteName="Login">
+                <Tab.Screen name="Login" component={LoginScreen} />
                 <Tab.Screen name="Chat" component={ChatScreen} />
                 <Tab.Screen name="Profile" component={ProfileScreen} />
             </Tab.Navigator>
