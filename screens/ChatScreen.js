@@ -5,50 +5,29 @@ import Chat from "../elements/Chat";
 export default ({ navigation }) => {
     let [text, setText] = useState("");
     let [messages, setMessages] = useState([]);
+    
     const inputRef = useRef();
 
-    function connect(socket) {
-        socket.onopen = () => {
-            console.log("connection established");
-            socket.send(JSON.stringify({type: "message", message: "message from phone"}));
-            console.log("sent message");
-            clearInterval(global.interval);
-        };
-        socket.onclose = (e) => {
-            // connection closed
-            console.log("connection closed");
-            if (!global.interval) {
-                console.log("no interval");
-                global.interval = setInterval(() => {
-                    console.log("attempting to reconnect");
-                    global.ws = new WebSocket("ws://192.168.29.91:8080");
-                    connect(global.ws);
-                    global.interval.clearInterval();
-                    global.interval = null;
-                }, 1000 * 5);
-            }
-        };
-        socket.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            if(data.type == "message") {
-                console.log("message recieved")
-                setMessages([
-                    ...messages,
-                    {
-                        id: Math.random().toString(12).substring(0),
-                        message: data.message,
-                        prefix: "recieved: ",
-                    },
-                ]);
-            } else if(data.type == "data") {
-                global.serverId = data.id;
-            }
-            // a message was received
-            console.log(`received: ${e.data}`);
-            
-        };
-    }
-    connect(global.ws);
+    global.ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        if(data.type == "message") {
+            console.log("message recieved")
+            setMessages([
+                ...messages,
+                {
+                    id: Math.random().toString(12).substring(0),
+                    message: data.message,
+                    prefix: "recieved: ",
+                },
+            ]);
+        } else if(data.type == "data") {
+            global.serverId = data.id;
+        }
+        // a message was received
+        console.log(`received: ${e.data}`);
+        
+    };
+    //connect(global.ws);
 
     return (
         <View style={styles.container}>
@@ -79,21 +58,12 @@ export default ({ navigation }) => {
                         text = "";
                         inputRef.current.setNativeProps({ text: "" });
                         inputRef.current.blur();
-                    }}
-                ></Button>
-                <Button
-                    title="close"
-                    onPress={() => {
-                        global.ws.close();
+                        console.log("sent");
                     }}
                 ></Button>
             </View>
             <View>
                 <Text>Messages</Text>
-                <Button
-                    title="profile"
-                    onPress={() => navigation.navigate("Profile")}
-                />
                 <Chat messages={messages}></Chat>
             </View>
         </View>
