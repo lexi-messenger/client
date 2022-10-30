@@ -16,7 +16,8 @@ export default function App() {
     global.interval = interval;
 
     return (
-        <NavigationContainer>
+        <NavigationContainer> 
+            {/* Nav Bar stuff */}
             <Tab.Navigator initialRouteName="Login">
                 <Tab.Screen name="Login" component={LoginScreen} />
                 <Tab.Screen name="Chat" component={ChatScreen} />
