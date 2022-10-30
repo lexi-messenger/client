@@ -7,10 +7,12 @@ import LoginScreen from "./screens/LoginScreen";
 import ProfileScreen from "./screens/ProfileScreen";
 import ChatScreen from "./screens/ChatScreen";
 
+import config from "./config.js"
+
 const Tab = createBottomTabNavigator();
 
 function openWebSocket() {
-    let ws = new WebSocket("ws://192.168.29.91:8080");
+    let ws = new WebSocket(config.websocket_ip);
     ws.onopen = () => {
         console.log("connection established");
         ws.send(JSON.stringify({ type: "user", message: "d" }));
