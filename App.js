@@ -10,7 +10,7 @@ import ChatScreen from "./screens/ChatScreen";
 const Tab = createBottomTabNavigator();
 
 function openWebSocket() {
-    let ws = new WebSocket("ws://192.168.29.91:8080");
+    let ws = new WebSocket("ws://192.168.4.118:8080");
     ws.onopen = () => {
         console.log("connection established");
         ws.send(JSON.stringify({ type: "user", message: "d" }));
@@ -46,8 +46,10 @@ export default function App() {
 
     return (
         <NavigationContainer>
+            {/* initialRouteName is the page that's loaded on app launch */}
+            {/* The name attribute indicates the text that appears under each icon in the nav bar at the bottom of the screen */}
             <Tab.Navigator initialRouteName="Login">
-                <Tab.Screen name="Login" component={LoginScreen} />
+                <Tab.Screen name="Sign-Out" component={LoginScreen} />
                 <Tab.Screen name="Chat" component={ChatScreen} />
                 <Tab.Screen name="Profile" component={ProfileScreen} />
             </Tab.Navigator>
