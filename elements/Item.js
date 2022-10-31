@@ -9,12 +9,14 @@ export default Item = ({ title }) => (
 
 const styles = StyleSheet.create({
     item: {
-        backgroundColor: "#f9c2ff",
+        backgroundColor: "#1982FC",
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
+        borderRadius: 30,
     },
     title1: {
         fontSize: 16,
+        color: 'white'
     },
 });

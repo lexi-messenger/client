@@ -1,4 +1,6 @@
-import { View, Text, Button } from "react-native";
+import { View, Image, Text, Button } from "react-native";
+
+
 
 export default ({ navigation }) => {
     return (
@@ -9,7 +11,13 @@ export default ({ navigation }) => {
                 justifyContent: "center",
             }}
         >
-            <Text>Profile Screen</Text>
+            <Text>Profile: </Text>
+            {/* display username */}
+            <Text></Text>
+            <Image style={{
+                width: 150,
+                height: 150,
+            }} source={require('../assets/FrogFrame.png')} />
             <Button
                 title="go to chat"
                 onPress={() => navigation.navigate("Chat")}
