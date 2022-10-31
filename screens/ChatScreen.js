@@ -2,30 +2,37 @@ import { useState, useRef } from "react";
 import { StyleSheet, View, Text, TextInput, Button } from "react-native";
 import Chat from "../elements/Chat";
 
+import translate from "google-translate-api-x";
+
 export default ({ navigation }) => {
     let [text, setText] = useState("");
     let [messages, setMessages] = useState([]);
-    
+
     const inputRef = useRef();
 
     global.ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        if(data.type == "message") {
-            console.log("message recieved")
-            setMessages([
-                ...messages,
-                {
-                    id: Math.random().toString(12).substring(0),
-                    message: data.message,
-                    prefix: "recieved: ",
-                },
-            ]);
-        } else if(data.type == "data") {
+        if (data.type == "message") {
+            console.log("message recieved");
+            translate(data.message, { to: "zh-CN" })
+                .then((res) => {
+                    setMessages([
+                        ...messages,
+                        {
+                            id: Math.random().toString(12).substring(0),
+                            message: `${res.text}\noriginal: ${data.message}\nfrom ${res.from.language.iso} to es`,
+                            prefix: "recieved: ",
+                        },
+                    ]);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        } else if (data.type == "data") {
             global.serverId = data.id;
         }
         // a message was received
         console.log(`received: ${e.data}`);
-        
     };
     //connect(global.ws);
 
@@ -53,7 +60,7 @@ export default ({ navigation }) => {
                             type: "message",
                             message: text,
                             id: global.serverId ?? -1,
-                        }
+                        };
                         global.ws.send(JSON.stringify(message));
                         text = "";
                         inputRef.current.setNativeProps({ text: "" });
