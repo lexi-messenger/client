@@ -25,7 +25,7 @@ function openWebSocket() {
         console.log("connection closed");
         global.interval = setInterval(() => {
             console.log("attempting to reconnect");
-            openWebSocket();
+            global.ws = openWebSocket();
             clearInterval(global.interval);
         }, 1000 * 5);
     }
