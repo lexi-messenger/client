@@ -48,7 +48,6 @@ export default ({ navigation }) => {
                 <Button
                     title="send"
                     onPress={() => {
-                        if(text.length < 1) return;
                         setMessages([
                             ...messages,
                             {
@@ -64,7 +63,7 @@ export default ({ navigation }) => {
                         };
                         global.ws.send(JSON.stringify(message));
                         text = "";
-                        inputRef.current.setNativeProps({ text: "" });
+                        setText("");
                         inputRef.current.blur();
                         console.log("sent");
                     }}
