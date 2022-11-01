@@ -1,5 +1,4 @@
-import { StyleSheet, View, Image, Text, Button } from "react-native";
-import { useState, useRef } from "react";
+import { View, Image, Text, Button } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import { languages } from "google-translate-api-x";
 
