@@ -48,6 +48,7 @@ export default ({ navigation }) => {
                 <Button
                     title="send"
                     onPress={() => {
+                        if(text.length < 1) return;
                         setMessages([
                             ...messages,
                             {
