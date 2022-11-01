@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { StyleSheet, View, Text, TextInput, Button } from "react-native";
 import Chat from "../elements/Chat";
 
-import translate from "google-translate-api-x";
+import translate, { languages } from "google-translate-api-x";
 
 export default ({ navigation }) => {
     let [text, setText] = useState("");
@@ -14,13 +14,14 @@ export default ({ navigation }) => {
         const data = JSON.parse(e.data);
         if (data.type == "message") {
             console.log("message recieved");
-            translate(data.message, { to: "zh-CN" })
+            translate(data.message, { to: global.lang ?? "en" })
                 .then((res) => {
+
                     setMessages([
                         ...messages,
                         {
                             id: Math.random().toString(12).substring(0),
-                            message: `${res.text}\noriginal: ${data.message}\nfrom ${res.from.language.iso} to es`,
+                            message: `${res.text}\noriginal: ${data.message}\nfrom ${languages[res.from.language.iso]} to ${global.lang ? languages[global.lang] : "English"}`,
                             prefix: "recieved: ",
                         },
                     ]);
