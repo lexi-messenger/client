@@ -48,6 +48,7 @@ export default ({ navigation }) => {
                 <Button
                     title="send"
                     onPress={() => {
+                        if(text.length < 1) return;
                         setMessages([
                             ...messages,
                             {
@@ -62,8 +63,8 @@ export default ({ navigation }) => {
                             id: global.serverId ?? -1,
                         };
                         global.ws.send(JSON.stringify(message));
-                        text = "";
                         setText("");
+                        inputRef.current.setNativeProps({ text: "" });
                         inputRef.current.blur();
                         console.log("sent");
                     }}
