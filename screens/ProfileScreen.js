@@ -2,7 +2,7 @@ import { View, Image, Text, Button } from "react-native";
 
 
 
-export default ({ navigation }) => {
+export default function App({ navigation }) {
     return (
         <View
             style={{

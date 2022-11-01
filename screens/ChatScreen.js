@@ -48,6 +48,9 @@ export default ({ navigation }) => {
         const data = JSON.parse(e.data);
         if(data.type == "message") {
     
+            //
+
+            console.log(data)
             console.log("message recieved")
             setMessages([
                 ...messages,
@@ -64,9 +67,9 @@ export default ({ navigation }) => {
                     id: Math.random().toString(12).substring(0),
                     message: data.message,
                     inOrOutbound: "in",
-                    timeSent: timeSince(data.timeSent)
-                    //userSent: data.userSent //already included in data so no need to refrence again
-
+                    timeSent: timeSince(data.timeSent),
+                    userSent: global.user, //already included in data so no need to refrence again
+                    prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
 
                 },
             ]);
@@ -109,6 +112,7 @@ export default ({ navigation }) => {
                                 message: text,
                                 inOrOutbound: "out",
                                 prefix: "sent: ",
+                                userSent: global.user
                             },
                         ]);
 
