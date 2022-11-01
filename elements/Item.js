@@ -19,6 +19,6 @@ const styles = StyleSheet.create({
     },
     title1: {
         fontSize: 16,
-        color: 'white'
+        color: "white",
     },
 });

@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { StyleSheet, View, Text, TextInput, Button } from "react-native";
 import Chat from "../elements/Chat";
 
+import translate, { languages } from "google-translate-api-x";
 
 //time formatting
 function timeSince(date) {
@@ -10,24 +11,31 @@ function timeSince(date) {
     const day = hour * 24;
 
     const timeSent = new Date(date);
-    const daysAgo = Math.round(Date.now() / day) - Math.round(date / day)
+    const daysAgo = Math.round(Date.now() / day) - Math.round(date / day);
 
-    
     if (daysAgo < 1) {
-        return "today at " + timeSent.toLocaleTimeString().substring(0, timeSent.toLocaleTimeString().length-3);
+        return (
+            "today at " +
+            timeSent
+                .toLocaleTimeString()
+                .substring(0, timeSent.toLocaleTimeString().length - 3)
+        );
     }
 
-
     if (daysAgo == 1) {
-        return "yesterday at " + timeSent.toLocaleTimeString().substring(0, timeSent.toLocaleTimeString().length-3);
+        return (
+            "yesterday at " +
+            timeSent
+                .toLocaleTimeString()
+                .substring(0, timeSent.toLocaleTimeString().length - 3)
+        );
     }
 
     if (daysAgo > 1) {
-        return daysAgo + " days ago"
+        return daysAgo + " days ago";
     }
+}
 
-  }
-  
 //   example:
 //   var aDay = 24*60*60*1000;
 //   console.log(timeSince(new Date(Date.now()-aDay)));
@@ -38,47 +46,53 @@ export default ({ navigation }) => {
     //we need message text, userSent, and userRecieved
     let [text, setText] = useState("");
     let [receiver, setReceiver] = useState("");
-    
+
     let [messages, setMessages] = useState([]);
-    
+
     const messageRef = useRef();
     const receiverRef = useRef();
 
     global.ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        if(data.type == "message") {
-    
-            //
-
+        if (data.type == "message") {
+            console.log("message recieved:");
             console.log(data)
-            console.log("message recieved")
-            setMessages([
-                ...messages,
-                {
-                    // //for displaying messages
-                    // OLD METHOD:
-                    // id: Math.random().toString(12).substring(0),
-                    // message: data.message,
-                    // inOrOutbound: "in",
-                    // prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
 
-                    //NEW METHOD THAT ALLOWS FORMATTING IN Chat.js
-                    //for displaying messages
-                    id: Math.random().toString(12).substring(0),
-                    message: data.message,
-                    inOrOutbound: "in",
-                    timeSent: timeSince(data.timeSent),
-                    userSent: global.user, //already included in data so no need to refrence again
-                    prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
+            translate(data.message, { to: global.lang ?? "en" })
+                .then((res) => {
+                    setMessages([
+                        ...messages,
+                        {
+                            // //for displaying messages
+                            // OLD METHOD:
+                            // id: Math.random().toString(12).substring(0),
+                            // message: data.message,
+                            // inOrOutbound: "in",
+                            // prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
 
-                },
-            ]);
-        } else if(data.type == "data") {
+                            //NEW METHOD THAT ALLOWS FORMATTING IN Chat.js
+                            //for displaying messages
+                            id: Math.random().toString(12).substring(0),
+                            message: `${res.text}\noriginal: ${
+                                data.message
+                            }\nfrom ${languages[res.from.language.iso]} to ${
+                                global.lang ? languages[global.lang] : "English"
+                            }`,
+                            inOrOutbound: "in",
+                            timeSent: timeSince(data.timeSent),
+                            prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
+                            userSent: data.userSent //already included in data so no need to refrence again
+                        },
+                    ]);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        } else if (data.type == "data") {
             global.serverId = data.id;
         }
         // a message was received
         console.log(`received: ${e.data}`);
-        
     };
     //connect(global.ws);
 
@@ -86,16 +100,16 @@ export default ({ navigation }) => {
         <View style={styles.container}>
             <View style={styles.title}>
                 <TextInput
-                // Input field for the message to be sent
+                    // Input field for the message to be sent
                     style={styles.textInput}
                     placeholder="Message..."
                     onChangeText={(newText) => setText(newText)}
                     ref={messageRef}
                 />
                 {/* line break */}
-                <Text>{'\n'}</Text>
+                <Text>{"\n"}</Text>
                 <TextInput
-                // Input field for message recipient (will be removed after screen of friends is added)
+                    // Input field for message recipient (will be removed after screen of friends is added)
                     style={styles.textInput}
                     placeholder="To..."
                     onChangeText={(newReceiver) => setReceiver(newReceiver)}
@@ -105,6 +119,7 @@ export default ({ navigation }) => {
                 <Button
                     title="send"
                     onPress={() => {
+                        if (text.length < 1) return;
                         setMessages([
                             ...messages,
                             {
@@ -116,8 +131,8 @@ export default ({ navigation }) => {
                             },
                         ]);
 
-                    //Message format:
-                    /* type: "message",
+                        //Message format:
+                        /* type: "message",
                        userSent: userSent,
                        userReceiving: userReceiving,
                        timeSent: timeSent,
@@ -132,11 +147,9 @@ export default ({ navigation }) => {
                             //timeSent: new Date().toDateString(),  set on server-side
                             message: text,
                             id: global.serverId ?? -1,
-                        }
-
-
+                        };
                         global.ws.send(JSON.stringify(message));
-                        text = "";
+                        setText("");
                         messageRef.current.setNativeProps({ text: "" });
                         messageRef.current.blur();
                         console.log(`sent: ${message}`);

@@ -32,7 +32,8 @@ export default function LoginScreen({ navigation }) {
         >
             <Text>Login</Text>
             {/* TextInput below should be relayed to a global variable that saves userSent for each message */}
-            <TextInput placeholder="Username" 
+            <TextInput 
+                placeholder="Username" 
                 onChangeText={(value) => setUserName(value)}
             />
             <TextInput secureTextEntry={true} placeholder="Password" onChangeText={(value) => setPassword(value)}/>
