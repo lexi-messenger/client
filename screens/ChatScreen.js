@@ -2,22 +2,72 @@ import { useState, useRef } from "react";
 import { StyleSheet, View, Text, TextInput, Button } from "react-native";
 import Chat from "../elements/Chat";
 
+
+//time formatting
+function timeSince(date) {
+    const minute = 1000 * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+
+    const timeSent = new Date(date);
+    const daysAgo = Math.round(Date.now() / day) - Math.round(date / day)
+
+    
+    if (daysAgo < 1) {
+        return "today at " + timeSent.toLocaleTimeString().substring(0, timeSent.toLocaleTimeString().length-3);
+    }
+
+
+    if (daysAgo == 1) {
+        return "yesterday at " + timeSent.toLocaleTimeString().substring(0, timeSent.toLocaleTimeString().length-3);
+    }
+
+    if (daysAgo > 1) {
+        return daysAgo + " days ago"
+    }
+
+  }
+  
+//   example:
+//   var aDay = 24*60*60*1000;
+//   console.log(timeSince(new Date(Date.now()-aDay)));
+//   would return "24 hours"
+
 export default ({ navigation }) => {
+    //state functions to set inputs to variables that will be shipped with each message
+    //we need message text, userSent, and userRecieved
     let [text, setText] = useState("");
+    let [receiver, setReceiver] = useState("");
+    
     let [messages, setMessages] = useState([]);
     
-    const inputRef = useRef();
+    const messageRef = useRef();
+    const receiverRef = useRef();
 
     global.ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
         if(data.type == "message") {
+    
             console.log("message recieved")
             setMessages([
                 ...messages,
                 {
+                    // //for displaying messages
+                    // OLD METHOD:
+                    // id: Math.random().toString(12).substring(0),
+                    // message: data.message,
+                    // inOrOutbound: "in",
+                    // prefix: "recieved " + timeSince(data.timeSent) + " from " + data.userSent + ": ",
+
+                    //NEW METHOD THAT ALLOWS FORMATTING IN Chat.js
+                    //for displaying messages
                     id: Math.random().toString(12).substring(0),
                     message: data.message,
-                    prefix: "recieved: ",
+                    inOrOutbound: "in",
+                    timeSent: timeSince(data.timeSent)
+                    //userSent: data.userSent //already included in data so no need to refrence again
+
+
                 },
             ]);
         } else if(data.type == "data") {
@@ -33,11 +83,22 @@ export default ({ navigation }) => {
         <View style={styles.container}>
             <View style={styles.title}>
                 <TextInput
+                // Input field for the message to be sent
                     style={styles.textInput}
-                    placeholder="Type here!"
+                    placeholder="Message..."
                     onChangeText={(newText) => setText(newText)}
-                    ref={inputRef}
+                    ref={messageRef}
                 />
+                {/* line break */}
+                <Text>{'\n'}</Text>
+                <TextInput
+                // Input field for message recipient (will be removed after screen of friends is added)
+                    style={styles.textInput}
+                    placeholder="To..."
+                    onChangeText={(newReceiver) => setReceiver(newReceiver)}
+                    ref={receiverRef}
+                />
+                {/* everything for sending messages happens here */}
                 <Button
                     title="send"
                     onPress={() => {
@@ -46,19 +107,35 @@ export default ({ navigation }) => {
                             {
                                 id: Math.random().toString(12).substring(2),
                                 message: text,
+                                inOrOutbound: "out",
                                 prefix: "sent: ",
                             },
                         ]);
+
+                    //Message format:
+                    /* type: "message",
+                       userSent: userSent,
+                       userReceiving: userReceiving,
+                       timeSent: timeSent,
+                       message: data.message,
+                       id: userSent's id
+                    */
+
                         const message = {
                             type: "message",
+                            userSent: global.userSent, //change this to username once we have that set up
+                            userReceiving: receiver,
+                            //timeSent: new Date().toDateString(),  set on server-side
                             message: text,
                             id: global.serverId ?? -1,
                         }
+
+
                         global.ws.send(JSON.stringify(message));
                         text = "";
-                        inputRef.current.setNativeProps({ text: "" });
-                        inputRef.current.blur();
-                        console.log("sent");
+                        messageRef.current.setNativeProps({ text: "" });
+                        messageRef.current.blur();
+                        console.log(`sent: ${message}`);
                     }}
                 ></Button>
             </View>
