@@ -16,7 +16,6 @@ export default ({ navigation }) => {
             console.log("message recieved");
             translate(data.message, { to: global.lang ?? "en" })
                 .then((res) => {
-
                     setMessages([
                         ...messages,
                         {
