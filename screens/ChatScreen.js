@@ -79,6 +79,7 @@ export default ({ navigation }) => {
                             }`,
                             inOrOutbound: "in",
                             timeSent: timeSince(data.timeSent),
+                            prefix: "recieved: "
                             //userSent: data.userSent //already included in data so no need to refrence again
                         },
                     ]);
