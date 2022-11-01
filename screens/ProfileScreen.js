@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Image, Text, Button } from "react-native";
 import { useState, useRef } from "react";
 import SelectDropdown from "react-native-select-dropdown";
 import { languages } from "google-translate-api-x";
@@ -12,10 +12,21 @@ export default ({ navigation }) => {
                 justifyContent: "center",
             }}
         >
+            <Text>Profile: </Text>
+            {/* display username */}
+            <Text></Text>
+            <Image
+                style={{
+                    width: 150,
+                    height: 150,
+                }}
+                source={require("../assets/FrogFrame.png")}
+            />
+
             <Text>Language</Text>
             <SelectDropdown
                 data={Object.values(languages)}
-                defaultButtonText={'Select language'}
+                defaultButtonText={"Select language"}
                 defaultValueByIndex={Object.keys(languages).indexOf("en")}
                 onSelect={(selectedItem, index) => {
                     global.lang = Object.keys(languages)[index];
@@ -34,7 +45,7 @@ export default ({ navigation }) => {
                 searchPlaceHolder={"Search here"}
                 searchPlaceHolderColor={"darkgrey"}
             />
-            
+
             <Button
                 title="go to chat"
                 onPress={() => navigation.navigate("Chat")}
