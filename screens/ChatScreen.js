@@ -54,14 +54,18 @@ export default ({ navigation }) => {
 
     global.ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
+
+        // -------------------------------------------RECEIVING MESSAGES--------------------------------------------------
         if (data.type == "message") {
-            console.log("message recieved");
+            console.log("message recieved:");
+            console.log(data)
 
             translate(data.message, { to: global.lang ?? "en" })
                 .then((res) => {
                     setMessages([
                         ...messages,
                         {
+
                             // //for displaying messages
                             // OLD METHOD:
                             // id: Math.random().toString(12).substring(0),
@@ -72,15 +76,11 @@ export default ({ navigation }) => {
                             //NEW METHOD THAT ALLOWS FORMATTING IN Chat.js
                             //for displaying messages
                             id: Math.random().toString(12).substring(0),
-                            message: `${res.text}\noriginal: ${
-                                data.message
-                            }\nfrom ${languages[res.from.language.iso]} to ${
-                                global.lang ? languages[global.lang] : "English"
-                            }`,
-                            inOrOutbound: "in",
+                            message: `${res.text}\nOriginal ${languages[res.from.language.iso]}: ${data.message}`,
+                            clientMessage: false,
                             timeSent: timeSince(data.timeSent),
-                            prefix: "recieved: ",
-                            //userSent: data.userSent //already included in data so no need to refrence again
+                            prefix: "Recieved " + timeSince(data.timeSent) + "\nFrom @" + data.userSent + ":\n",
+                            userSent: data.userSent //already included in data so no need to refrence again
                         },
                     ]);
                 })
@@ -97,6 +97,23 @@ export default ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <View>
+                <Text>Messages</Text>
+                <Chat messages={messages}></Chat>
+            </View>
+            <View style={styles.title}>
+                <Text>{"\n"}</Text>
+                <TextInput
+                    // Input field for message recipient (will be removed after screen of friends is added)
+                    style={styles.textInput}
+                    placeholder="To..."
+                    onChangeText={(newReceiver) => setReceiver(newReceiver)}
+                    ref={receiverRef}
+                />
+                {/* ---------------------------------- SENDING MESSAGES -------------------------------- */}
+                
+            </View>
+
             <View style={styles.title}>
                 <TextInput
                     // Input field for the message to be sent
@@ -106,17 +123,11 @@ export default ({ navigation }) => {
                     ref={messageRef}
                 />
                 {/* line break */}
-                <Text>{"\n"}</Text>
-                <TextInput
-                    // Input field for message recipient (will be removed after screen of friends is added)
-                    style={styles.textInput}
-                    placeholder="To..."
-                    onChangeText={(newReceiver) => setReceiver(newReceiver)}
-                    ref={receiverRef}
-                />
-                {/* everything for sending messages happens here */}
-                <Button
+            </View>
+            <View style={styles.title}>
+            <Button
                     title="send"
+                    color="#6DB079"
                     onPress={() => {
                         if (text.length < 1) return;
                         setMessages([
@@ -124,7 +135,7 @@ export default ({ navigation }) => {
                             {
                                 id: Math.random().toString(12).substring(2),
                                 message: text,
-                                inOrOutbound: "out",
+                                clientMessage: true,
                                 prefix: "sent: ",
                             },
                         ]);
@@ -137,7 +148,7 @@ export default ({ navigation }) => {
                        message: data.message,
                        id: userSent's id
                     */
-
+                        // --------------------------------------- ACTUALLY SENDING THIS INFORMATION ----------------------------------
                         const message = {
                             type: "message",
                             userSent: global.userSent, //change this to username once we have that set up
@@ -145,6 +156,8 @@ export default ({ navigation }) => {
                             //timeSent: new Date().toDateString(),  set on server-side
                             message: text,
                             id: global.serverId ?? -1,
+                            userSent: global.user,
+                            language: global.lang,
                         };
                         global.ws.send(JSON.stringify(message));
                         setText("");
@@ -153,10 +166,6 @@ export default ({ navigation }) => {
                         console.log(`sent: ${message}`);
                     }}
                 ></Button>
-            </View>
-            <View>
-                <Text>Messages</Text>
-                <Chat messages={messages}></Chat>
             </View>
         </View>
     );
@@ -168,6 +177,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         margin: 40,
+        paddingBottom: 160,
         justifyContent: "center",
     },
     title: {
@@ -175,6 +185,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+        position: 'relative',
+        //bottom: 150,
     },
     textInput: {
         height: 40,
