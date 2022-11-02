@@ -11,9 +11,11 @@ export default function App({ navigation }) {
                 justifyContent: "center",
             }}
         >
-            <Text>Profile: </Text>
+            <Text style={{color: "#1C3520", fontSize: 40, fontWeight: "bold",}}>Profile</Text>
             {/* display username */}
-            <Text></Text>
+            <Text>
+                Username: {global.user}
+            </Text>
             <Image
                 style={{
                     width: 150,
@@ -22,7 +24,7 @@ export default function App({ navigation }) {
                 source={require("../assets/FrogFrame.png")}
             />
 
-            <Text>Language</Text>
+            <Text style={{marginBottom: 10,}}>Language:</Text>
             <SelectDropdown
                 data={Object.values(languages)}
                 defaultButtonText={"Select language"}
@@ -42,11 +44,13 @@ export default function App({ navigation }) {
                 }}
                 search
                 searchPlaceHolder={"Search here"}
-                searchPlaceHolderColor={"darkgrey"}
+                searchPlaceHolderColor={"#A5CBAC"}
+                
             />
-
+            <View style={{marginTop: 10,}}></View>
             <Button
                 title="go to chat"
+                color="#6DB079"
                 onPress={() => navigation.navigate("Chat")}
             />
         </View>

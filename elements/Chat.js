@@ -4,7 +4,8 @@ import Item from "./Item";
 
 //Render two different components depending on if a message is inbound or outbound
 
-const renderItem = ({ item }) => <Item title={item.prefix + item.message} />;
+//sent messages
+const renderItem = ({ item }) => <Item  title={item.prefix + item.message} clientMessage={item.clientMessage} />;
 
 export default ({ messages }) => (
     <FlatList
@@ -19,6 +20,7 @@ export default ({ messages }) => (
 
 const styles = StyleSheet.create({
     messages: {
+        //alignItems: 'baseline',
         margin: 10,
         borderRadius: 10,
     },
